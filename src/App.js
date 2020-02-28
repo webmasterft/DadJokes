@@ -14,7 +14,7 @@ class App extends Component {
     };
 
     this.onSearchChange = this.onSearchChange.bind(this);
-    this.SearchSubmit = this.onSearchSubmit.bind(this);
+    this.onSearchSubmit = this.onSearchSubmit.bind(this);
     this.searchJokes = this.searchJokes.bind(this);
   }
 
