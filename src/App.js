@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import Loader from "./components/loader";
+import Loader from "./components/Loader";
+import SearchForm from "./components/SearchForm";
 import "./styles.css";
-import ".";
 
 class App extends Component {
   constructor() {
@@ -43,9 +43,9 @@ class App extends Component {
       });
   }
 
-  onSearchChange(e) {
+  onSearchChange(value) {
     this.setState({
-      searchTerm: e.target.value
+      searchTerm: value
     });
   }
   onSearchSubmit(e) {
@@ -66,22 +66,15 @@ class App extends Component {
     return (
       <div>
         <div className="container">
-          <form onSubmit={this.onSearchSubmit}>
-            <input
-              type="text"
-              placeholder="Search..."
-              onChange={e => this.onSearchChange}
-            />
-            <button>Search</button>
-            <button
-              onClick={() => this.searchJokes(1)}
-              disabled={this.state.isFetching}
-            >
-              I'm felling funny
-            </button>
-          </form>
+          <SearchForm
+            onFormSubmit={this.onSearchSubmit}
+            onSearchValueChange={this.onSearchChange}
+            isSearching={this.state.isFetching}
+            onSingleSearchClick={() => this.searchJokes(1)}
+          />
 
           {this.state.isFetching ? <Loader /> : this.renderJokes()}
+          
         </div>
       </div>
     );
