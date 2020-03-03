@@ -6,19 +6,22 @@ import Messages from "./components/Messages";
 import "bootswatch/dist/flatly/bootstrap.min.css";
 import "./styles.css";
 
+
+const initialState = {
+  searchTerm: "",
+  totalJokes: null,
+  jokes: [],
+  isFetching: false
+};
+
 class App extends Component {
   constructor() {
     super();
-
-    this.state = {
-      searchTerm: "",
-      totalJokes: null,
-      jokes: [],
-      isFetching: false
-    };
+    this.state = initialState;
 
     this.onSearchChange = this.onSearchChange.bind(this);
     this.onSearchSubmit = this.onSearchSubmit.bind(this);
+    this.onReset = this.onReset.bind(this);
     this.searchJokes = this.searchJokes.bind(this);
   }
 
@@ -54,9 +57,16 @@ class App extends Component {
       searchTerm: value
     });
   }
+
   onSearchSubmit(e) {
     e.preventDefault();
     this.searchJokes();
+  }
+
+  onReset(e) {
+    e.preventDefault();
+    this.setState(initialState);
+    document.getElementById("searchForm").reset();
   }
 
   render() {
@@ -67,19 +77,20 @@ class App extends Component {
           <SearchForm
             onFormSubmit={this.onSearchSubmit}
             onSearchValueChange={this.onSearchChange}
+            onReset={this.onReset}
             isSearching={this.state.isFetching}
             onSingleSearchClick={() => this.searchJokes(1)}
           />
 
-          {this.state.isFetching ? (
-            <Loader />
-          ) : this.state.totalJokes > 1 && this.state.totalJokes !== null ? (
-            <JokesList jokes={this.state.jokes} />
-          ) : (
+          {this.state.isFetching ? <Loader /> : ""}
+
+          {this.state.totalJokes === 0 ? (
             <Messages
               type="danger"
               message="Oh snap! No jokes found! Try again!"
             />
+          ) : (
+            <JokesList jokes={this.state.jokes} />
           )}
         </div>
       </div>
