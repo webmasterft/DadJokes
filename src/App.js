@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import Loader from "./components/Loader";
 import SearchForm from "./components/SearchForm";
+import JokesList from "./components/JokesList";
+import Messages from "./components/Messages";
 import "bootswatch/dist/flatly/bootstrap.min.css";
 import "./styles.css";
 
@@ -10,6 +12,7 @@ class App extends Component {
 
     this.state = {
       searchTerm: "",
+      totalJokes: null,
       jokes: [],
       isFetching: false
     };
@@ -37,9 +40,11 @@ class App extends Component {
     )
       .then(response => response.json())
       .then(json => {
+        console.log(json);
         this.setState({
           jokes: json.results,
-          isFetching: false
+          isFetching: false,
+          totalJokes: json.total_jokes
         });
       });
   }
@@ -54,25 +59,6 @@ class App extends Component {
     this.searchJokes();
   }
 
-  renderJokes() {
-    return (
-      <div className="bs-component my-5">
-        <ul className="list-group">
-          {this.state.jokes.map((item, index) => (
-            <li
-              className={
-                "list-group-item d-flex justify-content-between align-items-center" +
-                (index % 2 === 0 ? " active" : "")
-              }
-              key={item.id}
-            >
-              {item.joke}
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
   render() {
     return (
       <div>
@@ -85,7 +71,16 @@ class App extends Component {
             onSingleSearchClick={() => this.searchJokes(1)}
           />
 
-          {this.state.isFetching ? <Loader /> : this.renderJokes()}
+          {this.state.isFetching ? (
+            <Loader />
+          ) : this.state.totalJokes > 1 && this.state.totalJokes !== null ? (
+            <JokesList jokes={this.state.jokes} />
+          ) : (
+            <Messages
+              type="danger"
+              message="Oh snap! No jokes found! Try again!"
+            />
+          )}
         </div>
       </div>
     );
