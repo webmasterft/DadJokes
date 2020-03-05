@@ -51,7 +51,6 @@ class App extends Component {
         this.setState(
           Object.assign({}, json, { isFetching: false, jokes: json.results })
         );
-        console.log(this.state);
       });
   }
 
@@ -82,12 +81,12 @@ class App extends Component {
             onSearchValueChange={this.onSearchChange}
             onReset={this.onReset}
             isSearching={this.state.isFetching}
-            onSingleSearchClick={() => this.searchJokes(1, 1)}
+            onSingleSearchClick={() => this.searchJokes(1, Math.floor(Math.random() * this.state.total_pages) + 1 )}
           />
 
           {this.state.isFetching ? <Loader /> : ""}
 
-          {this.state.total_jokes === 0 ? (
+          {this.state.total_jokes === 0 && this.state.isFetching ? (
             <Messages
               type="danger"
               message="Oh snap! No jokes found! Try again!"
