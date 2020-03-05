@@ -1,17 +1,22 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import Loader from "./components/Loader";
 import SearchForm from "./components/SearchForm";
 import JokesList from "./components/JokesList";
 import Messages from "./components/Messages";
+import Pagination from "./components/Pagination";
 import "bootswatch/dist/flatly/bootstrap.min.css";
 import "./styles.css";
 
-
 const initialState = {
-  searchTerm: "",
-  totalJokes: null,
-  jokes: [],
-  isFetching: false
+  current_page: null,
+  limit: 10,
+  next_page: null,
+  previous_page: null,
+  search_term: "",
+  isFetching: false,
+  total_jokes: null,
+  total_pages: null,
+  jokes: []
 };
 
 class App extends Component {
@@ -25,15 +30,15 @@ class App extends Component {
     this.searchJokes = this.searchJokes.bind(this);
   }
 
-  searchJokes(limit = 20) {
+  searchJokes(limit = 10, page = 1) {
     this.setState({
       isFetching: true
     });
 
     fetch(
       `https://icanhazdadjoke.com/search?term=${
-        this.state.searchTerm
-      }&limit=${limit}`,
+        this.state.search_term
+      }&limit=${limit}&page=${page}`,
       {
         method: "GET",
         headers: {
@@ -43,18 +48,16 @@ class App extends Component {
     )
       .then(response => response.json())
       .then(json => {
-        console.log(json);
-        this.setState({
-          jokes: json.results,
-          isFetching: false,
-          totalJokes: json.total_jokes
-        });
+        this.setState(
+          Object.assign({}, json, { isFetching: false, jokes: json.results })
+        );
+        console.log(this.state);
       });
   }
 
   onSearchChange(value) {
     this.setState({
-      searchTerm: value
+      search_term: value
     });
   }
 
@@ -79,18 +82,36 @@ class App extends Component {
             onSearchValueChange={this.onSearchChange}
             onReset={this.onReset}
             isSearching={this.state.isFetching}
-            onSingleSearchClick={() => this.searchJokes(1)}
+            onSingleSearchClick={() => this.searchJokes(1, 1)}
           />
 
           {this.state.isFetching ? <Loader /> : ""}
 
-          {this.state.totalJokes === 0 ? (
+          {this.state.total_jokes === 0 ? (
             <Messages
               type="danger"
               message="Oh snap! No jokes found! Try again!"
             />
           ) : (
-            <JokesList jokes={this.state.jokes} />
+            <Fragment>
+              <JokesList jokes={this.state.jokes} />
+              <Pagination
+                limit={this.state.limit}
+                previous_page={this.state.previous_page}
+                current_page={this.state.current_page}
+                total_pages={this.state.total_pages}
+                prevPage={() =>
+                  this.searchJokes(this.state.limit, this.state.previous_page)
+                }
+                nextPage={() =>
+                  this.searchJokes(this.state.limit, this.state.next_page)
+                }
+                firstPage={() => this.searchJokes(this.state.limit, 1)}
+                lastPage={() =>
+                  this.searchJokes(this.state.limit, this.state.total_pages)
+                }
+              />
+            </Fragment>
           )}
         </div>
       </div>

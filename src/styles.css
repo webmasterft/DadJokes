@@ -3,6 +3,10 @@
   text-align: center;
 }
 
+.pagination li{
+  margin:0 1px;
+}
+
 .loader,
 .loader:after {
   border-radius: 50%;

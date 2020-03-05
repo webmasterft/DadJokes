@@ -2,6 +2,7 @@ import React from "react";
 
 const JokesList = props => (
   <div className="bs-component my-5">
+    {props.results}
     <ul className="list-group">
       {props.jokes.map((item, index) => (
         <li
@@ -13,7 +14,7 @@ const JokesList = props => (
         >
           {item.joke}
         </li>
-      ))}
+        ))}
     </ul>
   </div>
 );
